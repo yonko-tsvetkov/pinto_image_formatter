@@ -1,0 +1,263 @@
+<?php
+/**
+ * @file
+ * Pinterest like responsive grid layout.
+ */
+
+module_load_include('inc', 'pinto_image_formatter', 'includes/pinto_image_formatter_imagestyles');
+
+
+/**
+ * Implements hook_libraries_info().
+ */
+function pinto_image_formatter_libraries_info() {
+  $libraries = array();
+  $libraries['pinto'] = array(
+    'name' => 'Pinto',
+    'vendor url' => 'https://github.com/MaxLawrence/Pinto',
+    'download url' => 'https://github.com/MaxLawrence/Pinto',
+    'version arguments' => array(
+      'file' => 'jquery.pinto.js',
+      'pattern' => '/@version (\d+)/',
+      'lines' => 6,
+    ),
+    'files' => array(
+      'js' => array(
+        'jquery.pinto.js',
+      ),
+    ),
+  );
+  return $libraries;
+}
+
+/**
+ * Implements hook_help().
+ */
+function pinto_image_formatter_help($path, $arg) {
+  if ($path == 'admin/help#pinto_image_formatter') {
+    return t('Pinto Image Formatter enables users to create pinterest-like image galleries and responsive grid layouts by using jQuery plugin Pinto.js with colorbox gallery option.');
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function pinto_image_formatter_theme() {
+  $module_path = drupal_get_path('module', 'pinto_image_formatter');
+  return array(
+    'pinto_image_formatter_main' => array(
+      'path' => $module_path . '/templates',
+      'template' => 'pinto_image_formatter_main',
+      'variables' => array(
+        'title' => NULL,
+        'alt' => NULL,
+        'uri' => NULL,
+        'node_path' => NULL,
+        'url_original' => NULL,
+        'url_styled' => NULL,
+        'image_style' => NULL,
+        'link_to' => NULL,
+        'width' => NULL,
+        'height' => NULL,
+        'delta' => NULL,
+        'label_type' => NULL,
+        'label_text' => NULL,
+      ),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function pinto_image_formatter_field_formatter_info() {
+  $formatters = array(
+    'pinto_image_formatter_image' => array(
+      'label' => t('Pinto'),
+      'field types' => array('image'),
+      'settings' => array(
+        'pinto_image_formatter_image_style' => '',
+        'pinto_image_formatter_image_link' => '',
+        'pinto_image_formatter_align' => '',
+        'pinto_image_formatter_marginx' => '',
+        'pinto_image_formatter_marginy' => '',
+      ),
+    ),
+  );
+
+  return $formatters;
+}
+
+/**
+ * Implements hook_field_formatter_settings_form().
+ */
+function pinto_image_formatter_field_formatter_settings_form($field, $instance, $view_mode, $form, &$form_state) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+  $image_styles = image_style_options(FALSE);
+
+  $image_styles_default = (!empty($settings['pinto_image_formatter_image_style']) ? $image_styles_default = check_plain($settings['pinto_image_formatter_image_style']) : $image_styles_default = 'thumbnail');
+
+  $default_x = (!empty($settings['pinto_image_formatter_marginx']) ? $default_x = check_plain($settings['pinto_image_formatter_marginx']) : $default_x = 10);
+
+  $default_y = (!empty($settings['pinto_image_formatter_marginy']) ? $default_y = check_plain($settings['pinto_image_formatter_marginy']) : $default_y = 10);
+
+  $default_align = (!empty($settings['pinto_image_formatter_align']) ? $default_align = check_plain($settings['pinto_image_formatter_align']) : $default_align = 'center');
+
+  $default_link = (!empty($settings['pinto_image_formatter_image_link']) ? $default_link = check_plain($settings['pinto_image_formatter_image_link']) : $default_link = 'none');
+
+  $element['pinto_image_formatter_image_style'] = array(
+    '#title' => t('Thumbnail style'),
+    '#type' => 'select',
+    '#default_value' => $image_styles_default,
+    '#options' => $image_styles,
+  );
+  if (module_exists('colorbox')) {
+    $link_types = array(
+      'none' => t('None'),
+      'content' => t('Content'),
+      'file' => t('Original image'),
+      'colorbox_modal' => t('Colorbox modal'),
+    );
+
+  }
+  else {
+
+    $link_types = array(
+      'none' => t('None'),
+      'content' => t('Content'),
+      'file' => t('Original image'),
+    );
+  }
+  $element['pinto_image_formatter_image_link'] = array(
+    '#title' => t('Link to'),
+    '#type' => 'select',
+    '#default_value' => $default_link,
+    '#options' => $link_types,
+  );
+
+  $element['pinto_image_formatter_align'] = array(
+    '#title' => t('Align'),
+    '#type' => 'select',
+    '#options' => array(
+      'left' => t('Left'),
+      'center' => t('Center'),
+      'right' => t('Right'),
+    ),
+    '#default_value' => $default_align,
+  );
+  $element['pinto_image_formatter_marginx'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Margin X'),
+    '#default_value' => $default_x,
+  );
+  $element['pinto_image_formatter_marginy'] = array(
+    '#type' => 'textfield',
+    '#title' => t('Margin Y'),
+    '#default_value' => $default_y,
+  );
+  return $element;
+
+}
+
+/**
+ * Implements hook_field_formatter_settings_summary().
+ */
+function pinto_image_formatter_field_formatter_settings_summary($field, $instance, $view_mode) {
+  $display = $instance['display'][$view_mode];
+  $settings = $display['settings'];
+  $summary = '';
+  $image_styles = image_style_options(FALSE);
+  unset($image_styles['']);
+
+  $image_styles_default = (!empty($settings['pinto_image_formatter_image_style']) ? $image_styles_default = check_plain($settings['pinto_image_formatter_image_style']) : $image_styles_default = 'thumbnail');
+
+  $default_x = (!empty($settings['pinto_image_formatter_marginx']) ? $default_x = check_plain($settings['pinto_image_formatter_marginx']) : $default_x = 10);
+
+  $default_y = (!empty($settings['pinto_image_formatter_marginy']) ? $default_y = check_plain($settings['pinto_image_formatter_marginy']) : $default_y = 10);
+
+  $default_align = (!empty($settings['pinto_image_formatter_align']) ? $default_align = check_plain($settings['pinto_image_formatter_align']) : $default_align = 'center');
+
+  $default_link = (!empty($settings['pinto_image_formatter_image_link']) ? $default_link = check_plain($settings['pinto_image_formatter_image_link']) : $default_link = 'none');
+
+  if ($display['type'] == 'pinto_image_formatter_image' && $instance['entity_type'] == "node") {
+    $summary .= t("<strong>Image style:</strong> @image_styles_default<br />", array('@image_styles_default' => $image_styles_default));
+    $summary .= t("<strong>Link to:</strong> @default_link<br />", array('@default_link' => $default_link));
+    $summary .= t("<strong>Align:</strong> @default_align<br />", array('@default_align' => $default_align));
+    $summary .= t("<strong>Margin x:</strong> @default_x<br />", array('@default_x' => $default_x));
+    $summary .= t("<strong>Margin y:</strong> @default_y<br />", array('@default_y' => $default_y));
+  }
+
+  return $summary;
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function pinto_image_formatter_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  $settings = $display['settings'];
+  switch ($display['type']) {
+    case 'pinto_image_formatter_image':
+      $field_name = $field['field_name'];
+      $field_real_name = $entity->$field_name;
+      $settings_image_style = $settings['pinto_image_formatter_image_style'];
+      if (!empty($field_real_name[LANGUAGE_NONE][0]['uri'])) {
+        $img_info = image_get_info(image_style_path($settings_image_style, $field_real_name[LANGUAGE_NONE][0]['uri']));
+      }
+      $options = array('absolute' => TRUE);
+      $nid = $entity->nid;
+      $node_path = url('node/' . $nid, $options);
+
+      if (isset($img_info['width'])) {
+        $grid_img_width = $img_info['width'];
+      }
+      else {
+        $grid_img_width = 220;
+      };
+
+      $align = $display['settings']['pinto_image_formatter_align'];
+      $margin_x = $display['settings']['pinto_image_formatter_marginx'];
+      $margin_y = $display['settings']['pinto_image_formatter_marginy'];
+      $pinto_selector = ".pinto-" . $instance['field_name'];
+      libraries_load('pinto');
+      drupal_add_js('(function ($) {$(window).load(function() {var pinto_selector = String("' . $pinto_selector . '");var align = String("' . $align . '");var grid_width = ' . $grid_img_width . ';$(pinto_selector).pinto({itemWidth: grid_width, gapX: ' . $margin_x . ', gapY: ' . $margin_y . ', align: align, fitWidth: false, animate: true, autoResize: true, resizeDelay: 50,onItemLayout: function($item, column, position) {}});});})(jQuery);',
+      array('type' => 'inline', 'scope' => 'header', 'weight' => 5)
+      );
+
+      foreach ($items as $delta => $item) {
+        $img_info = image_get_info(image_style_path($display['settings']['pinto_image_formatter_image_style'], $field_real_name[LANGUAGE_NONE][$delta]['uri']));
+        $element[$delta] = array(
+          '#theme' => 'pinto_image_formatter_main',
+          '#node_path' => $node_path,
+          '#title' => check_plain($field_real_name[LANGUAGE_NONE][$delta]['title']),
+          '#alt' => check_plain($field_real_name[LANGUAGE_NONE][$delta]['alt']),
+          '#url_original' => file_create_url($field_real_name[LANGUAGE_NONE][$delta]['uri']),
+          '#url_styled' => image_style_url($display['settings']['pinto_image_formatter_image_style'], $field_real_name[LANGUAGE_NONE][$delta]['uri']),
+          '#link_to' => $display['settings']['pinto_image_formatter_image_link'],
+          '#image_style' => $display['settings']['pinto_image_formatter_image_style'],
+          '#width' => $img_info['width'],
+          '#height' => $img_info['height'],
+          '#delta' => $delta,
+          '#label_type' => $display['label'],
+          '#label_text' => $instance['label'],
+        );
+      }
+
+      break;
+  }
+
+  return $element;
+}
+
+/**
+ * Implements hook_preprocess_field().
+ */
+function pinto_image_formatter_preprocess_field(&$variables, $hook) {
+  if ($variables['element']['#formatter'] == 'pinto_image_formatter_image') {
+    $pinto_container_class = "pinto-" . $variables['element']['#field_name'];
+    $variables['classes_array'][] = $pinto_container_class;
+    $variables['classes_array'][] = 'field-pinto';
+    $variables['label_hidden'] = TRUE;
+  }
+}

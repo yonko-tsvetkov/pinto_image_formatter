@@ -1,0 +1,33 @@
+.field-pinto > div {
+  -webkit-box-shadow: 0 4px 15px -5px #555;
+  box-shadow: 0 4px 15px -5px #555;
+  background-color: #fff;
+  padding: 2px;
+  margin: 5px;
+}
+.field-pinto > div img {
+  padding: 0;
+  margin: 0;
+  display: block;
+}
+.pinto-main-box {
+  overflow: hidden;
+}
+.pinto-image-box {
+  float: left;
+  padding-top: 1px;
+}
+.field-pinto {
+  margin: 15px 0;
+}
+.field-pinto .pinto-label {
+  display: block;
+  clear: both;
+  position: absolute;
+  top: -15px;
+  z-index: 2;
+}
+.pinto-caption {
+  float: left;
+  padding: 0 3px 0 3px;
+}

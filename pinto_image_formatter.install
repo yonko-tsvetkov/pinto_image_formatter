@@ -1,0 +1,47 @@
+<?php
+
+/**
+ * @file
+ * Pinto image formatter module install file.
+ */
+
+/**
+ * Implements hook_requirements().
+ */
+function pinto_image_formatter_requirements($phase) {
+  $requirements = array();
+
+  if ($phase == 'runtime') {
+    $t = get_t();
+    $library = libraries_detect('pinto');
+
+    if (empty($library['installed'])) {
+      $requirements['pinto'] = array(
+        'title' => $t('Pinto jQuery Plugin'),
+        'value' => $t('1.2.0'),
+        'severity' => REQUIREMENT_ERROR,
+        'description' => $t('Download the file !file and copy it to sites/all/libraries/pinto',
+        array('!file' => l($t('jquery.pinto.js'), $library['download url']))
+        ),
+      );
+
+    }
+    else {
+      $requirements['pinto'] = array(
+        'title' => $t('Pinto jQuery Plugin'),
+        'severity' => REQUIREMENT_OK,
+        'value' => $t('Installed correctly'),
+      );
+    }
+
+    if ((!version_compare(variable_get('jquery_update_jquery_version', 0), 1.7, '>='))) {
+      $requirements['jquery_version'] = array(
+        'title' => $t('Pinto Image Formatter'),
+        'description' => $t('Pinto Image Formatter requires a minimum jQuery version of !jqconfig.', array('!jqconfig' => l($t('1.7 or higher'), '/admin/config/development/jquery_update'))),
+        'value' => 'JQuery version',
+        'severity' => REQUIREMENT_ERROR,
+      );
+    }
+  }
+  return $requirements;
+}

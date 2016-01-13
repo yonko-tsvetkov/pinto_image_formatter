@@ -6,6 +6,8 @@ with colorbox gallery option.
 
 Demo site - http://demo7.yonko-tsvetkov.com/pinto-image-formatter
 
+Wiki page - https://github.com/yonko-tsvetkov/pinto_image_formatter/wiki
+
 REQUIREMENTS
 ------------
 This module requires the following modules:

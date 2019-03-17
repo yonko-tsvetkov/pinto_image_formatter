@@ -21,7 +21,7 @@ function pinto_image_formatter_requirements($phase) {
         'value' => $t('1.2.0'),
         'severity' => REQUIREMENT_ERROR,
         'description' => $t('Download the file !file and copy it to sites/all/libraries/pinto',
-        array('!file' => l($t('jquery.pinto.js'), $library['download url']))
+        array('!file' => l($t('pinto.js'), $library['download url']))
         ),
       );
 

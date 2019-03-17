@@ -4,8 +4,6 @@ Pinto Image Formatter is a Drupal 7 module that enables users to create pinteres
 and responsive grid layouts by using jQuery plugin Pinto.js 
 with colorbox gallery option.
 
-Wiki page - https://github.com/yonko-tsvetkov/pinto_image_formatter/wiki
-
 REQUIREMENTS
 ------------
 This module requires the following modules:

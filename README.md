@@ -23,7 +23,7 @@ JQuery Update and Libraries modules. See:
 https://drupal.org/documentation/install/modules-themes/modules-7
 for further information.
 
-Download jquery.pinto.js file from https://github.com/cfconsultancy/Pinto
+Download pinto.js file from https://github.com/cfconsultancy/Pinto
 and copy it to directory - sites/all/libraries/pinto
 
 Enable Pinto Image Formatter and dependent JQuery Update and Libraries 

@@ -14,16 +14,16 @@ function pinto_image_formatter_libraries_info() {
   $libraries = array();
   $libraries['pinto'] = array(
     'name' => 'Pinto',
-    'vendor url' => 'https://github.com/MaxLawrence/Pinto',
-    'download url' => 'https://github.com/MaxLawrence/Pinto',
+    'vendor url' => 'https://github.com/cfconsultancy/Pinto',
+    'download url' => 'https://github.com/cfconsultancy/Pinto',
     'version arguments' => array(
-      'file' => 'jquery.pinto.js',
+      'file' => 'pinto.js',
       'pattern' => '/@version (\d+)/',
       'lines' => 6,
     ),
     'files' => array(
       'js' => array(
-        'jquery.pinto.js',
+        'pinto.js',
       ),
     ),
   );
